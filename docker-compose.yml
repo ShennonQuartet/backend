@@ -21,13 +21,13 @@ services:
   streamer:
     build: streamer/.
     volumes:
-      - "./data.h5:/usr/src/app/data.csv"
+      - "./streamer/data.csv:/usr/src/app/data.csv"
     ports:
       - "5678:5678"
     environment:
-      ENCODING: 'cp1251'
+      ENCODING: "utf-8"
       FILE_PATH: "data.csv"
-      COLUMNS: "date,"
+      COLUMNS: "date,S.C.ВПУСК.ПП.ДАВЛ...214PI226AA,SPEED.CONTROLLER...250MSIC001.PV,ТЕМПЕРАТУРА.EX.21401...250TI004,ЦИЛ..3.ТЕМП.НАГР...214TI216A"
   db:
     image: postgres:alpine
     environment:
