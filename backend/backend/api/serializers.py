@@ -1,9 +1,6 @@
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from .models import Incident
-from rest_framework.renderers import JSONRenderer
-import json
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -24,7 +21,9 @@ class UserRelatedField(serializers.RelatedField):
     def to_internal_value(self, data):
         serializer = WriteUserSerializer(data=data)
         if serializer.is_valid():
-            user = get_object_or_404(User, **serializer.validated_data)
+            user = User.objects.get(**serializer.validated_data)
+            if not user:
+                raise serializers.ValidationError("User should exist")
             return user
 
 
