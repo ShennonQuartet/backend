@@ -2,8 +2,9 @@ version: '2'
 services:
   api:
     build: backend/.
-    command: sh -c 'python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000'
+    entrypoint: "./entrypoint.sh"
+    command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./backend/backend:/code
+      - "./backend/backend:/code"
     ports:
       - "8000:8000"
