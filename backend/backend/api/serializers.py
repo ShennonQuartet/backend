@@ -21,10 +21,12 @@ class UserRelatedField(serializers.RelatedField):
     def to_internal_value(self, data):
         serializer = WriteUserSerializer(data=data)
         if serializer.is_valid():
-            user = User.objects.get(**serializer.validated_data)
+            user = User.objects.filter(**serializer.validated_data).first()
             if not user:
                 raise serializers.ValidationError("User should exist")
             return user
+        else:
+            raise(serializer.errors)
 
 
 class IncidentSerializer(serializers.ModelSerializer):
