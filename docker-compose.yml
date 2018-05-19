@@ -5,7 +5,8 @@ services:
     entrypoint: "./entrypoint.sh"
     command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
-      - "./backend/backend:/code"
+      - "./backend/backend:/usr/src/app"
+      - "./backend/entrypoint.sh:/usr/src/app/entrypoint.sh"
     ports:
       - "8000:8000"
     environment:
@@ -17,6 +18,16 @@ services:
       - db
     links:
       - db
+  streamer:
+    build: streamer/.
+    volumes:
+      - "./data.h5:/usr/src/app/data.csv"
+    ports:
+      - "5678:5678"
+    environment:
+      ENCODING: 'cp1251'
+      FILE_PATH: "data.csv"
+      COLUMNS: "date,"
   db:
     image: postgres:alpine
     environment:
