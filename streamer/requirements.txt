@@ -1,7 +1,9 @@
+pillow
 websockets
 pandas
 tables
-apistar
 sklearn
 lightgbm
 scipy
+keras
+tensorflow

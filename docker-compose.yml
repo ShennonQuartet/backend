@@ -28,9 +28,10 @@ services:
       DATASET_PATH: "data.csv"
       DATASET_ENCODING: "utf-8"
       PREDICTION_MODEL_PATH: "model.pkl"
-      VERIFICATION_MODEL_PATH: "classifier.pkl"
+      VERIFICATION_MODEL_NAME: "./model1"
       IMAGES_PATH: "images"
-      API_URL: "http://localhost:8000/static/"
+      API_URL: "http://localhost:8000/static/
+      "
     volumes:
       - "./images:/usr/src/app/images"
   db:

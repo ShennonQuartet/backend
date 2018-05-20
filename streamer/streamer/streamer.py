@@ -4,7 +4,7 @@ import websockets
 import json
 import logging
 from model import load_df, load_model, get_prediction_for_dt
-from verification_model import get_verification
+from verification_model import get_verification, load_verification_model
 
 
 PERIOD = os.environ.get('PERIOD', 10)
@@ -15,7 +15,7 @@ ENCODING = os.environ.get('ENCODING', 'utf-8')
 DATASET_PATH = os.environ.get('DATASET_PATH', 'dataset.csv')
 DATASET_ENCODING = os.environ.get('DATASET_ENCODING', 'utf-8')
 PREDICTION_MODEL_PATH = os.environ.get('PREDICTION_MODEL_PATH', 'model.pkl')
-#VERIFICATION_MODEL_PATH = os.environ.get('VERIFICATION_MODEL_PATH', 'classifier.pkl')
+VERIFICATION_MODEL_NAME = os.environ.get('VERIFICATION_MODEL_NAME', 'model1')
 
 IMAGES_PATH = os.environ.get('IMAGES_PATH', 'images')
 API_URL = os.environ.get("API_URL", 'localhost:8000/static/')
@@ -34,7 +34,7 @@ streamdf = preprocess_streamdf(fulldf)
 logging.info(streamdf.head())
 
 prediction_model = load_model(PREDICTION_MODEL_PATH)
-verification_model = '' #load_model(VERIFICATION_MODEL_PATH)
+verif_model = load_verification_model(VERIFICATION_MODEL_NAME)
 
 
 def row_to_dict(row, columns):
@@ -70,7 +70,7 @@ async def pub():
                 logging.info(f'{str(websocket.remote_address)} notified')
                 try:
                     row['prediction'] = round(get_prediction_for_dt(fulldf, prediction_model, row['date']), 6)
-                    row['verification'] = get_verification(verification_model, IMAGES_PATH, API_URL)
+                    row['verification'] = get_verification(verif_model, IMAGES_PATH, API_URL)
                     cols = list(streamdf.columns) + ['prediction', 'verification']
                     row_json = json.dumps(row_to_dict(row, cols))
                     logging.debug(
