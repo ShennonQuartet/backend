@@ -4,10 +4,6 @@ from datetime import datetime, timedelta
 import numpy as np
 import pickle
 
-DATASET_PATH = os.environ.get('DATASET_PATH', 'dataset.csv')
-DATASET_ENCODING = os.environ.get('DATASET_ENCODING', 'utf-8')
-MODEL_FILE = os.environ.get('MODEL_FILE', 'model.pkl')
-
 
 def make_features(df):
     vecs = []
@@ -34,20 +30,20 @@ def get_features_for_dt(df, dt):
     return feature_vector
 
 
-def load_df():
+def load_df(fpath, encoding):
     def parse_dt(s):
         return datetime.strptime(s, '%Y-%m-%d %H:%M:%S')
 
-    df = pd.read_csv(DATASET_PATH, encoding=DATASET_ENCODING)
+    df = pd.read_csv(fpath, encoding=encoding)
     df = df.fillna(0)
     df['date'] = df['date'].apply(parse_dt)
 
     return df
 
 
-def load_model():
+def load_model(fpath):
     mdl = None
-    with open(MODEL_FILE, 'rb') as fin:
+    with open(fpath, 'rb') as fin:
         mdl = pickle.load(fin)
     return mdl
 

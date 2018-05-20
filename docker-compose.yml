@@ -30,7 +30,7 @@ services:
       PREDICTION_MODEL_PATH: "model.pkl"
       VERIFICATION_MODEL_PATH: "classifier.pkl"
       IMAGES_PATH: "images"
-      API_URL: "localhost:8000/static/"
+      API_URL: "http://localhost:8000/static/"
     volumes:
       - "./images:/usr/src/app/images"
   db:

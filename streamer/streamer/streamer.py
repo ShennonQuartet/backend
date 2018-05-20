@@ -3,8 +3,8 @@ import asyncio
 import websockets
 import json
 import logging
-import pandas as pd
 from model import load_df, load_model, get_prediction_for_dt
+from verification_model import get_verification
 
 
 PERIOD = os.environ.get('PERIOD', 10)
@@ -12,18 +12,29 @@ COLUMNS = os.environ.get('COLUMNS', 'date,RF.21304.Ток...213MII904A').split('
 ENCODING = os.environ.get('ENCODING', 'utf-8')
 
 
-def preprocess_df(df):
+DATASET_PATH = os.environ.get('DATASET_PATH', 'dataset.csv')
+DATASET_ENCODING = os.environ.get('DATASET_ENCODING', 'utf-8')
+PREDICTION_MODEL_PATH = os.environ.get('PREDICTION_MODEL_PATH', 'model.pkl')
+#VERIFICATION_MODEL_PATH = os.environ.get('VERIFICATION_MODEL_PATH', 'classifier.pkl')
+
+IMAGES_PATH = os.environ.get('IMAGES_PATH', 'images')
+API_URL = os.environ.get("API_URL", 'localhost:8000/static/')
+
+
+def preprocess_streamdf(df):
     df = df.fillna(0)
     df = df[COLUMNS]
     logging.info(df.head())
     return df
 
-fulldf = load_df()
+
+fulldf = load_df(DATASET_PATH, DATASET_ENCODING)
 logging.info(fulldf.head())
-streamdf = preprocess_df(fulldf)
+streamdf = preprocess_streamdf(fulldf)
 logging.info(streamdf.head())
 
-model = load_model()
+prediction_model = load_model(PREDICTION_MODEL_PATH)
+verification_model = '' #load_model(VERIFICATION_MODEL_PATH)
 
 
 def row_to_dict(row, columns):
@@ -58,9 +69,9 @@ async def pub():
             for websocket in SUBSCRIBERS:
                 logging.info(f'{str(websocket.remote_address)} notified')
                 try:
-                    row['prediction'] = round(get_prediction_for_dt(fulldf, model, row['date']), 6)
-                    print(row_to_dict(row, streamdf.columns))
-                    cols = list(streamdf.columns) + ['prediction']
+                    row['prediction'] = round(get_prediction_for_dt(fulldf, prediction_model, row['date']), 6)
+                    row['verification'] = get_verification(verification_model, IMAGES_PATH, API_URL)
+                    cols = list(streamdf.columns) + ['prediction', 'verification']
                     row_json = json.dumps(row_to_dict(row, cols))
                     logging.debug(
                         f'to {str(websocket.remote_address)} send: {row_json}')
