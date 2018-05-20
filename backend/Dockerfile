@@ -6,6 +6,6 @@ WORKDIR /usr/src/app
 ADD requirements.txt /usr/src/app/
 RUN pip install -r requirements.txt
 ADD entrypoint.sh /usr/src/app/
-ADD ./backend /usr/src/app/
+ADD . /usr/src/app/ls
 
-CMD python3 manage.py runserver 0.0.0.0:8000
+CMD python3 backend/manage.py runserver 0.0.0.0:8000  --insecure
