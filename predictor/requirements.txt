@@ -1,0 +1,6 @@
+pandas
+tables
+apistar
+sklearn
+lightgbm
+scipy
