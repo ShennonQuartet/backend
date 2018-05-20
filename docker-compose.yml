@@ -3,10 +3,9 @@ services:
   api:
     build: backend/.
     entrypoint: "./entrypoint.sh"
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: python3 backend/manage.py runserver 0.0.0.0:8000  --insecure
     volumes:
-      - "./backend/backend:/usr/src/app/"
-      - "./backend/entrypoint.sh:/usr/src/app/entrypoint.sh"
+      - "./backend:/usr/src/app"
     ports:
       - "8000:8000"
     environment:
@@ -28,7 +27,12 @@ services:
       COLUMNS: "date,S.C.ВПУСК.ПП.ДАВЛ...214PI226AA,SPEED.CONTROLLER...250MSIC001.PV,ТЕМПЕРАТУРА.EX.21401...250TI004,ЦИЛ..3.ТЕМП.НАГР...214TI216A"
       DATASET_PATH: "data.csv"
       DATASET_ENCODING: "utf-8"
-      MODEL_PATH: "model.pkl"
+      PREDICTION_MODEL_PATH: "model.pkl"
+      VERIFICATION_MODEL_PATH: "classifier.pkl"
+      IMAGES_PATH: "images"
+      API_URL: "localhost:8000/static/"
+    volumes:
+      - "./images:/usr/src/app/images"
   db:
     image: postgres:alpine
     environment:
