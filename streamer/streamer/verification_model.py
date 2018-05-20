@@ -6,7 +6,7 @@ from keras.preprocessing import image
 
 IMAGES_PATH = os.environ.get('IMAGES_PATH', 'images')
 
-IMAGES_CYCLE = cycle(os.listdir(IMAGES_PATH))
+IMAGES_CYCLE = cycle(sorted(os.listdir(IMAGES_PATH)))
 
 def get_image(img_path):
     img_name = next(IMAGES_CYCLE)
