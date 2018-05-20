@@ -31,6 +31,7 @@ services:
       VERIFICATION_MODEL_NAME: "./model1"
       IMAGES_PATH: "images"
       API_URL: "http://localhost:8000/static/"
+      PERIOD: 2
     volumes:
       - "./images:/usr/src/app/images"
   db:

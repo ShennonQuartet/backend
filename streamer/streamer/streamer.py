@@ -7,7 +7,7 @@ from model import load_df, load_model, get_prediction_for_dt
 from verification_model import get_verification
 
 
-PERIOD = os.environ.get('PERIOD', 10)
+PERIOD = int(os.environ.get('PERIOD', 10))
 COLUMNS = os.environ.get('COLUMNS', 'date,RF.21304.Ток...213MII904A').split(',')
 ENCODING = os.environ.get('ENCODING', 'utf-8')
 
@@ -75,6 +75,7 @@ async def pub():
                 try:
                     row['prediction'] = round(get_prediction_for_dt(fulldf, prediction_model, row['date']), 6)
                     row['verification'] = get_verification(verif_model, IMAGES_PATH, API_URL)
+                    print(f'Prediction: {row["prediction"]}, Verification: {row["verification"]}')
                     cols = list(streamdf.columns) + ['prediction', 'verification']
                     row_json = json.dumps(row_to_dict(row, cols))
                     logging.debug(
