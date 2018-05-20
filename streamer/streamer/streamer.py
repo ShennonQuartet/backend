@@ -9,7 +9,6 @@ from verification_model import get_verification
 
 PERIOD = int(os.environ.get('PERIOD', 10))
 COLUMNS = os.environ.get('COLUMNS', 'date,RF.21304.Ток...213MII904A').split(',')
-ENCODING = os.environ.get('ENCODING', 'utf-8')
 
 
 DATASET_PATH = os.environ.get('DATASET_PATH', 'dataset.csv')

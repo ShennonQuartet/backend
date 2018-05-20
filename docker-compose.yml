@@ -22,11 +22,10 @@ services:
     ports:
       - "5678:5678"
     environment:
-      ENCODING: "utf-8"
       FILE_PATH: "/usr/src/app/crash.csv"
-      COLUMNS: "date,S.C.ВПУСК.ПП.ДАВЛ...214PI226AA,ЭКСТР.ДВИГ.ВЛАСТЬ...214JI200A,УРОВЕНЬ.В...V.25001A...250LI001A,ЦИЛ..3.ТЕМП.НАГР...214TI216A"
+      COLUMNS: "date,Е.21402А....ГР.ВОДА.ВЫХ...214TIC101A,ЦИЛ..9.ТЕМП.УПР...214TIC213A,УРОВЕНЬ.В...V.25001A...250LI001A,НАГНЕТАНИЕ.В.EX.21401...250PI001"
       DATASET_PATH: "crash.csv"
-      DATASET_ENCODING: "utf-8"
+      DATASET_ENCODING: "cp1251"
       PREDICTION_MODEL_NAME: "./Predictions"
       VERIFICATION_MODEL_NAME: "./model1"
       IMAGES_PATH: "images"
