@@ -26,6 +26,9 @@ SECRET_KEY = '*c^tr!*o&+@m21kw+qrbtt70czzi9=r#a$tn#&$*6wpm-7%616'
 
 DEBUG = os.environ.get('DEBUG', True) is True
 ALLOWED_HOSTS = []
+if not DEBUG:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
 
 CORS_ORIGIN_ALLOW_ALL = True
 # Application definition

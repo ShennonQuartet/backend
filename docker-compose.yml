@@ -5,7 +5,7 @@ services:
     entrypoint: "./entrypoint.sh"
     command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
-      - "./backend/backend:/usr/src/app"
+      - "./backend/backend:/usr/src/app/"
       - "./backend/entrypoint.sh:/usr/src/app/entrypoint.sh"
     ports:
       - "8000:8000"
