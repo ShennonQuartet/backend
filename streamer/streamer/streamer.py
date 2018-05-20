@@ -35,16 +35,41 @@ def row_to_dict(row, columns):
     return data
 
 
-async def stream_data(websocket, path):
+SUBSCRIBERS = set()
+
+
+async def sub(websocket, path):
+    SUBSCRIBERS.add(websocket)
+    print(f'Subscribed {websocket.remote_address}')
+    try:
+        async for msg in websocket:
+            pass
+    except websockets.ConnectionClosed:
+        SUBSCRIBERS.remove(websocket)
+        print(f'Unsubscribed {websocket.remote_address}')
+
+
+async def pub():
     while True:
         for i, row in df.iterrows():
-            row_json = json.dumps(row_to_dict(row, df.columns))
-            logging.debug(f'to {str(websocket.remote_address)} send: {row_json}')
-            await websocket.send(row_json)
+            print('pub', i)
+            for websocket in SUBSCRIBERS:
+                logging.info(f'{str(websocket.remote_address)} notified')
+                try:
+                    row_json = json.dumps(row_to_dict(row, df.columns))
+                    logging.debug(
+                        f'to {str(websocket.remote_address)} send: {row_json}')
+                    await websocket.send(row_json)
+                except websockets.exceptions.ConnectionClosed:
+                    websocket.remove(websocket)
+                    print(f'Unsubscribed {websocket.remote_addr}')
             await asyncio.sleep(PERIOD)
 
 
-start_server = websockets.serve(stream_data, '0.0.0.0', 5678)
-
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+loop = asyncio.get_event_loop()
+start_server = websockets.serve(sub, '0.0.0.0', 5678)
+print('starting server')
+loop.run_until_complete(start_server)
+print('starting publishing')
+asyncio.async(pub())
+loop.run_forever()
