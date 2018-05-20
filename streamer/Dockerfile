@@ -6,4 +6,5 @@ ADD requirements.txt /usr/src/app/
 RUN pip install -r requirements.txt
 ADD ./streamer /usr/src/app
 ADD data.csv /usr/src/app
+ADD model.pkl /usr/src/app
 CMD python3 -u streamer.py
