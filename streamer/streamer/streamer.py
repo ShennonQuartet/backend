@@ -4,9 +4,10 @@ import websockets
 import json
 import logging
 import pandas as pd
+from model import load_df, load_model, get_prediction_for_dt
+
 
 PERIOD = os.environ.get('PERIOD', 10)
-FILE_PATH = os.environ.get('FILE_PATH', 'data.csv')
 COLUMNS = os.environ.get('COLUMNS', 'date,RF.21304.Ток...213MII904A').split(',')
 ENCODING = os.environ.get('ENCODING', 'utf-8')
 
@@ -17,21 +18,22 @@ def preprocess_df(df):
     logging.info(df.head())
     return df
 
+fulldf = load_df()
+logging.info(fulldf.head())
+streamdf = preprocess_df(fulldf)
+logging.info(streamdf.head())
 
-df = None
-if '.csv' in FILE_PATH:
-    df = pd.read_csv(FILE_PATH, encoding=ENCODING)
-elif 'h5' in FILE_PATH:
-    df = pd.read_hdf(FILE_PATH)
-logging.info(df.head())
-df = preprocess_df(df)
+model = load_model()
 
 
 def row_to_dict(row, columns):
-    data = dict([
-        (colname, row[i])
-        for i, colname in enumerate(columns)
-    ])
+    data = {}
+    for i, colname in enumerate(columns):
+        try:
+            json.dumps(row[i])
+            data[colname] = row[i]
+        except TypeError:
+            data[colname] = str(row[i])
     return data
 
 
@@ -51,12 +53,15 @@ async def sub(websocket, path):
 
 async def pub():
     while True:
-        for i, row in df.iterrows():
+        for i, row in streamdf.iterrows():
             print('pub', i)
             for websocket in SUBSCRIBERS:
                 logging.info(f'{str(websocket.remote_address)} notified')
                 try:
-                    row_json = json.dumps(row_to_dict(row, df.columns))
+                    row['prediction'] = round(get_prediction_for_dt(fulldf, model, row['date']), 6)
+                    print(row_to_dict(row, streamdf.columns))
+                    cols = list(streamdf.columns) + ['prediction']
+                    row_json = json.dumps(row_to_dict(row, cols))
                     logging.debug(
                         f'to {str(websocket.remote_address)} send: {row_json}')
                     await websocket.send(row_json)
