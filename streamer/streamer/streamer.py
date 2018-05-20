@@ -4,7 +4,7 @@ import websockets
 import json
 import logging
 from model import load_df, load_model, get_prediction_for_dt
-from verification_model import get_verification, load_verification_model
+from verification_model import get_verification
 
 
 PERIOD = os.environ.get('PERIOD', 10)
@@ -14,11 +14,13 @@ ENCODING = os.environ.get('ENCODING', 'utf-8')
 
 DATASET_PATH = os.environ.get('DATASET_PATH', 'dataset.csv')
 DATASET_ENCODING = os.environ.get('DATASET_ENCODING', 'utf-8')
-PREDICTION_MODEL_PATH = os.environ.get('PREDICTION_MODEL_PATH', 'model.pkl')
+PREDICTION_MODEL_NAME = os.environ.get('PREDICTION_MODEL_NAME', 'Predictions')
 VERIFICATION_MODEL_NAME = os.environ.get('VERIFICATION_MODEL_NAME', 'model1')
 
 IMAGES_PATH = os.environ.get('IMAGES_PATH', 'images')
 API_URL = os.environ.get("API_URL", 'localhost:8000/static/')
+
+SKIP_ROWS = int(os.environ.get("SKIP_ROWS", 2000))
 
 
 def preprocess_streamdf(df):
@@ -33,8 +35,8 @@ logging.info(fulldf.head())
 streamdf = preprocess_streamdf(fulldf)
 logging.info(streamdf.head())
 
-prediction_model = load_model(PREDICTION_MODEL_PATH)
-verif_model = load_verification_model(VERIFICATION_MODEL_NAME)
+prediction_model = load_model(PREDICTION_MODEL_NAME)
+verif_model = load_model(VERIFICATION_MODEL_NAME)
 
 
 def row_to_dict(row, columns):
@@ -65,6 +67,8 @@ async def sub(websocket, path):
 async def pub():
     while True:
         for i, row in streamdf.iterrows():
+            if i < SKIP_ROWS:
+                continue
             print('pub', i)
             for websocket in SUBSCRIBERS:
                 logging.info(f'{str(websocket.remote_address)} notified')

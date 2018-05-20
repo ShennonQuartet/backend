@@ -1,8 +1,7 @@
-import os
 import pandas as pd
 from datetime import datetime, timedelta
 import numpy as np
-import pickle
+from keras.models import model_from_json
 
 
 def make_features(df):
@@ -25,9 +24,11 @@ def make_range(df, stop_dt):
 
 
 def get_features_for_dt(df, dt):
-    rng = df[make_range(df, dt)]
-    feature_vector = make_features(rng)
-    return feature_vector
+    pred_base = df[df.date < pd.Timestamp(dt)].tail(1000) # choose last 1000 observations
+    pred_base = pred_base.iloc[:,1:] # delete date column
+    pred_base = (pred_base - pred_base.mean()) / (pred_base.max() - pred_base.min()) # normalize data
+    X = pred_base.values # return numpy array of values
+    return X.reshape(1, 1000, 43)
 
 
 def load_df(fpath, encoding):
@@ -41,14 +42,23 @@ def load_df(fpath, encoding):
     return df
 
 
-def load_model(fpath):
-    mdl = None
-    with open(fpath, 'rb') as fin:
-        mdl = pickle.load(fin)
-    return mdl
+def load_model(model_file):
+    # load json and create model
+    with open(model_file + '.json', 'r') as json_file:
+        loaded_model_json = json_file.read()
+    json_file.close()
+    loaded_model = model_from_json(loaded_model_json)
+    # load weights into new model
+    loaded_model.load_weights(model_file + '.h5')
+    return loaded_model
+
+
+def norm(x, min_, max_):
+    return (x - min_) / (max_ - min_)
 
 
 def get_prediction_for_dt(df, model, dt):
     features = get_features_for_dt(df, dt)
-    return model.predict([features])[0]
-
+    prediction = model.predict([features]).reshape(99)
+    prediction = prediction[~np.isnan(prediction)][-1]
+    return norm(prediction, 0, 0.05)
