@@ -24,7 +24,7 @@ services:
     environment:
       ENCODING: "utf-8"
       FILE_PATH: "/usr/src/app/data.csv"
-      COLUMNS: "date,S.C.ВПУСК.ПП.ДАВЛ...214PI226AA,SPEED.CONTROLLER...250MSIC001.PV,ТЕМПЕРАТУРА.EX.21401...250TI004,ЦИЛ..3.ТЕМП.НАГР...214TI216A"
+      COLUMNS: "date,S.C.ВПУСК.ПП.ДАВЛ...214PI226AA,РАСХОД.В....EX.21401...250FIC001.PV,УРОВЕНЬ.В...V.25001A...250LI001A,ЦИЛ..3.ТЕМП.НАГР...214TI216A"
       DATASET_PATH: "data.csv"
       DATASET_ENCODING: "utf-8"
       PREDICTION_MODEL_NAME: "./Predictions"
@@ -32,6 +32,7 @@ services:
       IMAGES_PATH: "images"
       API_URL: "http://localhost:8000/static/"
       PERIOD: 2
+      SKIP_ROWS: 40000
     volumes:
       - "./images:/usr/src/app/images"
   db:
