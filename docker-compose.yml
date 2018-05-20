@@ -30,8 +30,7 @@ services:
       PREDICTION_MODEL_NAME: "./Predictions"
       VERIFICATION_MODEL_NAME: "./model1"
       IMAGES_PATH: "images"
-      API_URL: "http://localhost:8000/static/
-      "
+      API_URL: "http://localhost:8000/static/"
     volumes:
       - "./images:/usr/src/app/images"
   db:
